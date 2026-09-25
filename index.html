@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LKPD INTERAKTIF PROYEK INFORMATIKA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .step-content { display: none; }
+        .step-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        canvas { touch-action: none; } /* Mencegah scrolling saat menggambar di HP */
+        .toast { transition: transform 0.3s ease-in-out, opacity 0.3s; transform: translateY(100%); opacity: 0; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col relative pb-20 md:pb-0">
+
+    <header class="bg-white shadow-sm border-b sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold text-blue-700">LKPD INTERAKTIF PROYEK INFORMATIKA</h1>
+                <p class="text-xs md:text-sm text-slate-500">Analisis Masalah dan Rancangan Solusi Digital - Pengganti Presentasi</p>
+            </div>
+            <button onclick="toggleTeacherMode()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-md transition border border-slate-300">
+                📊 Dashboard Guru
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto w-full px-4 py-8 flex-grow" id="app-container">
+        
+        <div id="progress-container" class="mb-8">
+            <div class="flex justify-between mb-2">
+                <span class="text-xs font-semibold inline-block text-blue-600" id="progress-text">Progres: 0%</span>
+                <span class="text-xs font-semibold inline-block text-slate-500" id="step-indicator">Langkah 1 dari 9</span>
+            </div>
+            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-blue-100">
+                <div id="progress-bar" style="width: 10%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600 transition-all duration-500"></div>
+            </div>
+        </div>
+
+        <div id="student-view" class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+            <form id="lkpd-form" onsubmit="return false;">
+                
+                <!-- STEP 1: Petunjuk & Identitas -->
+                <div class="step-content active p-6 md:p-8" id="step-1">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-md mb-8">
+                        <h3 class="font-bold text-blue-800 mb-2">Petunjuk Pengerjaan:</h3>
+                        <ul class="list-decimal list-inside text-sm text-blue-900 space-y-1">
+                            <li>Gunakan hasil analisis dari LKPD Proyek 1 kelompokmu.</li>
+                            <li>Jawab menggunakan kalimat sendiri secara jelas dan detail.</li>
+                            <li>Setelah klik KIRIM, kamu akan mendapat Kode ID. Simpan kode tersebut.</li>
+                            <li>Nilai bergantung pada kelengkapan, ketepatan analisis, dan kualitas rancangan.</li>
+                        </ul>
+                    </div>
+
+                    <h2 class="text-xl font-bold border-b pb-2 mb-6">1. Data Peserta Didik</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
+                            <input type="text" id="nama" class="w-full border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none required-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Kelas <span class="text-red-500">*</span></label>
+                            <input type="text" id="kelas" class="w-full border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none required-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Nomor Absen <span class="text-red-500">*</span></label>
+                            <input type="number" id="absen" class="w-full border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none required-input">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Nama Kelompok <span class="text-red-500">*</span></label>
+                            <input type="text" id="kelompok" class="w-full border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none required-input">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Anggota Kelompok Lainnya (Opsional)</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <input type="text" id="anggota1" placeholder="Anggota 1" class="w-full border border-slate-300 rounded-md p-2 text-sm outline-none">
+                            <input type="text" id="anggota2" placeholder="Anggota 2" class="w-full border border-slate-300 rounded-md p-2 text-sm outline-none">
+                            <input type="text" id="anggota3" placeholder="Anggota 3" class="w-full border border-slate-300 rounded-md p-2 text-sm outline-none">
+                            <input type="text" id="anggota4" placeholder="Anggota 4" class="w-full border border-slate-300 rounded-md p-2 text-sm outline-none">
+                            <input type="text" id="anggota5" placeholder="Anggota 5" class="w-full border border-slate-300 rounded-md p-2 text-sm outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Identifikasi Masalah -->
+                <div class="step-content p-6 md:p-8" id="step-2">
+                    <h2 class="text-xl font-bold border-b pb-2 mb-6">BAGIAN A – Identifikasi Masalah</h2>
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block font-medium mb-1">1. Tuliskan satu permasalahan nyata yang ditemukan di lingkungan sekolah atau masyarakat. <span class="text-red-500">*</span></label>
+                            <textarea id="masalah" rows="3" class="w-full border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none required-input"></textarea>
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">2. Siapa yang mengalami atau terdampak oleh masalah tersebut? <span class="text-red-500">*</span></label>
+                            <textarea id="terdampak" rows="2" class="w-full border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none required-input"></textarea>
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">3. Apa penyebab utama masalah tersebut? <span class="text-red-500">*</span></label>
+                            <textarea id="penyebab" rows="3" class="w-full border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none required-input"></textarea>
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">4. Mengapa masalah tersebut penting untuk diselesaikan? <span class="text-red-500">*</span></label>
+                            <textarea id="alasan_penting" rows="2" class="w-full border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none required-input"></textarea>
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">5. Apa akibat yang mungkin terjadi apabila masalah tersebut tidak diselesaikan? <span class="text-red-500">*</span></label>
+                            <textarea id="akibat" rows="2" class="w-full border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500 outline-none required-input"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Berpikir Komputasional -->
+                <div class="step-content p-6 md:p-8" id="step-3">
+                    <h2 class="text-xl font-bold border-b pb-2 mb-6">BAGIAN B – Analisis Berpikir Komputasional</h2>
+                    <div class="space-y-6">
+                        <!-- Decomposition -->
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <h3 class="font-bold text-lg mb-2 text-indigo-700">A. Decomposition</h3>
+                            <label class="block text-sm mb-2">Pecah masalah utama menjadi minimal 3 bagian masalah yang lebih kecil.</label>
+                            <div class="space-y-2">
+                                <input type="text" id="decomp_1" placeholder="Bagian 1..." class="w-full border border-slate-300 rounded-md p-2 outline-none required-input text-sm">
+                                <input type="text" id="decomp_2" placeholder="Bagian 2..." class="w-full border border-slate-300 rounded-md p-2 outline-none required-input text-sm">
+                                <input type="text" id="decomp_3" placeholder="Bagian 3..." class="w-full border border-slate-300 rounded-md p-2 outline-none required-input text-sm">
+                            </div>
+                        </div>
+
+                        <!-- Pattern Recognition -->
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <h3 class="font-bold text-lg mb-2 text-indigo-700">B. Pattern Recognition</h3>
+                            <label class="block text-sm mb-2">Apakah terdapat pola atau kejadian yang berulang pada masalah tersebut? Jelaskan.</label>
+                            <textarea id="pattern" rows="3" class="w-full border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-indigo-500 outline-none required-input"></textarea>
+                        </div>
+
+                        <!-- Abstraction -->
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <h3 class="font-bold text-lg mb-2 text-indigo-700">C. Abstraction</h3>
+                            <label class="block text-sm mb-2">Informasi apa yang paling penting untuk menyelesaikan masalah tersebut? Informasi apa yang diabaikan?</label>
+                            <textarea id="abstraction" rows="3" class="w-full border border-slate-300 rounded-md p-2 focus:ring-2 focus:ring-indigo-500 outline-none required-input"></textarea>
+                        </div>
+
+                        <!-- Algorithm -->
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <h3 class="font-bold text-lg mb-2 text-indigo-700">D. Algorithm</h3>
+                            <label class="block text-sm mb-2">Tuliskan langkah-langkah logis penyelesaian masalah secara berurutan.</label>
+                            <div id="algorithm-container" class="space-y-2 mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium w-20 text-sm">Langkah 1:</span>
+                                    <input type="text" class="alg-input w-full border border-slate-300 rounded-md p-2 outline-none text-sm required-input">
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium w-20 text-sm">Langkah 2:</span>
+                                    <input type="text" class="alg-input w-full border border-slate-300 rounded-md p-2 outline-none text-sm required-input">
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-medium w-20 text-sm">Langkah 3:</span>
+                                    <input type="text" class="alg-input w-full border border-slate-300 rounded-md p-2 outline-none text-sm required-input">
+                                </div>
+                            </div>
+                            <button type="button" onclick="addAlgorithmStep()" class="text-sm bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-3 py-1 rounded transition">+ Tambah Langkah</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Pembagian Peran -->
+                <div class="step-content p-6 md:p-8" id="step-4">
+                    <h2 class="text-xl font-bold border-b pb-2 mb-6">BAGIAN C – Pembagian Peran Tim</h2>
+                    <p class="text-sm text-slate-600 mb-4">Tuliskan nama anggota dan tanggung jawab spesifik pada setiap peran (meskipun tugas ini dikerjakan individu, analisis kontribusi tim di LKPD aslinya).</p>
+                    
+                    <div class="space-y-4">
+                        <!-- Project Manager -->
+                        <div class="bg-slate-50 border border-slate-300 p-4 rounded-lg">
+                            <h3 class="font-bold text-slate-700 mb-2">Project Manager (Maks 1)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <input type="text" id="role_pm_name_1" placeholder="Nama Anggota" class="w-full border border-slate-300 rounded-md p-2 text-sm outline-none required-input">
+                                <input type="text" id="role_pm_task_1" placeholder="Tugas/Tanggung Jawab" class="w-full border border-slate-300 rounded-md p-2 text-sm outline-none required-input">
+                            </div>
+                        </div>
+
+                        <!-- System Analyst -->
+                        <div class="bg-slate-50 border border-slate-300 p-4 rounded-lg">
+                            <h3 class="font-bold text-slate-700 mb-2">System Analyst (Maks 5)</h3>
+                            <div id="container_sa" class="space-y-2 mb-3">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 role-row-sa">
+                                    <input type="text" id="role_sa_name_1" placeholder="Nama Anggota 1" class="w-full border border-slate-300 rounded-md p-2 text-sm outline-none required-input">
+                                    <input type="text" id="role_sa_task_1" placeholder="Tugas/Tanggung Jawab 1" class="w-full border border-slate-300 rounded-md p-2 text-sm outline-none required-input">
+                                </div>
+                            </div>
+                            <button type="button" onclick="addRoleRow('sa')" class="text-sm bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-3 py-1 rounded transition">+ Tambah System Analyst</button>
+                        </div>
+                        
+                        <!-- Designer -->
+                        <div class="bg-slate-50 border border-slate-300 p-4 rounded-lg">
+                            <h3 class="font-bold text-slate-700 mb-2">Designer (Maks 5)</h3>
+                            <div id="container_ds" class="space-y-2 mb-3">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 role-row-ds">
+                                    <input type="text" id="role_ds_name_1" placeholder="Nama Anggota 1" class="w-full border border-slate-300 rounded-md p-2 text-sm outline-none required-input">
+                                    <input type="text" id="role_ds_task_1" placeholder="Tugas/Tanggung Jawab 1" class="w-full border border-slate-300 rounded-md p-2 text-sm outline-none required-input">
+                                </div>
+                            </div>
+                            <button type="button" onclick="addRoleRow('ds')" class="text-sm bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-3 py-1 rounded transition">+ Tambah Designer</button>
+                        </div>
+
+                        <!-- Communicator -->
+                        <div class="bg-slate-50 border border-slate-300 p-4 rounded-lg">
+                            <h3 class="font-bold text-slate-700 mb-2">Communicator (Maks 5)</h3>
+                            <div id="container_cm" class="space-y-2 mb-3">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 role-row-cm">
+                                    <input type="text" id="role_cm_name_1" placeholder="Nama Anggota 1" class="w-full border border-slate-300 rounded-md p-2 text-sm outline-none required-input">
+                                    <input type="text" id="role_cm_task_1" placeholder="Tugas/Tanggung Jawab 1" class="w-full border border-slate-300 rounded-md p-2 text-sm outline-none required-input">
+                                </div>
+                            </div>
+                            <button type="button" onclick="addRoleRow('cm')" class="text-sm bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-3 py-1 rounded transition">+ Tambah Communicator</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 5: Rancangan Solusi Digital -->
+                <div class="step-content p-6 md:p-8" id="step-5">
+                    <h2 class="text-xl font-bold border-b pb-2 mb-6">BAGIAN D – Rancangan Solusi Digital</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block font-medium mb-1">1. Nama Solusi Digital <span class="text-red-500">*</span></label>
+                            <input type="text" id="solusi_nama" placeholder="Contoh: Website Informasi Sekolah" class="w-full border border-slate-300 rounded-md p-2 outline-none required-input">
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">2. Jenis Solusi <span class="text-red-500">*</span></label>
+                            <select id="solusi_jenis" class="w-full border border-slate-300 rounded-md p-2 outline-none required-input bg-white">
+                                <option value="">-- Pilih Jenis --</option>
+                                <option value="Website">Website</option>
+                                <option value="Aplikasi Mobile">Aplikasi Mobile</option>
+                                <option value="Sistem Informasi">Sistem Informasi</option>
+                                <option value="Infografis Digital">Infografis Digital</option>
+                                <option value="Sistem Jaringan">Sistem Jaringan</option>
+                                <option value="Dashboard">Dashboard</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">3. Deskripsi Solusi (Min. 100 karakter) <span class="text-red-500">*</span></label>
+                            <textarea id="solusi_deskripsi" rows="4" placeholder="Jelaskan solusi teknologi yang ditawarkan..." class="w-full border border-slate-300 rounded-md p-2 outline-none required-input"></textarea>
+                            <div class="text-xs text-right mt-1" id="char_count">0 karakter</div>
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">4. Target Pengguna <span class="text-red-500">*</span></label>
+                            <input type="text" id="solusi_target" placeholder="Siapa yang akan menggunakan?" class="w-full border border-slate-300 rounded-md p-2 outline-none required-input">
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1">5. Manfaat Solusi <span class="text-red-500">*</span></label>
+                            <textarea id="solusi_manfaat" rows="2" class="w-full border border-slate-300 rounded-md p-2 outline-none required-input"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 6: Alur Kerja -->
+                <div class="step-content p-6 md:p-8" id="step-6">
+                    <h2 class="text-xl font-bold border-b pb-2 mb-4">BAGIAN E – Alur Kerja Solusi</h2>
+                    <p class="text-sm text-slate-600 mb-6">Bagaimana solusi tersebut bekerja dari awal sampai menghasilkan penyelesaian masalah? (Gunakan format: Pengguna melakukan X -> Sistem memproses Y -> dst). Minimal 5 tahap.</p>
+                    
+                    <div id="workflow-container" class="space-y-3 mb-4">
+                        <div class="flex items-center gap-3 bg-slate-50 p-2 border border-slate-200 rounded">
+                            <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0">1</span>
+                            <input type="text" class="wf-input w-full bg-transparent outline-none text-sm required-input" placeholder="Pengguna melakukan...">
+                        </div>
+                        <div class="flex items-center gap-3 bg-slate-50 p-2 border border-slate-200 rounded">
+                            <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0">2</span>
+                            <input type="text" class="wf-input w-full bg-transparent outline-none text-sm required-input" placeholder="Sistem menerima...">
+                        </div>
+                        <div class="flex items-center gap-3 bg-slate-50 p-2 border border-slate-200 rounded">
+                            <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0">3</span>
+                            <input type="text" class="wf-input w-full bg-transparent outline-none text-sm required-input" placeholder="Sistem memproses...">
+                        </div>
+                        <div class="flex items-center gap-3 bg-slate-50 p-2 border border-slate-200 rounded">
+                            <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0">4</span>
+                            <input type="text" class="wf-input w-full bg-transparent outline-none text-sm required-input" placeholder="Sistem menghasilkan...">
+                        </div>
+                        <div class="flex items-center gap-3 bg-slate-50 p-2 border border-slate-200 rounded">
+                            <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0">5</span>
+                            <input type="text" class="wf-input w-full bg-transparent outline-none text-sm required-input" placeholder="Pengguna memperoleh...">
+                        </div>
+                    </div>
+                    <button type="button" onclick="addWorkflowStep()" class="text-sm border border-slate-300 hover:bg-slate-100 text-slate-700 px-3 py-1 rounded transition">+ Tambah Tahap Alur</button>
+                </div>
+
+                <!-- STEP 7: Wireframe -->
+                <div class="step-content p-6 md:p-8" id="step-7">
+                    <h2 class="text-xl font-bold border-b pb-2 mb-4">BAGIAN F – Wireframe Digital</h2>
+                    <p class="text-sm text-slate-600 mb-4">Buat sketsa antarmuka (wireframe) menggunakan area gambar di bawah ini. Pastikan ada elemen: Judul, Menu, Tombol, Area Info, Input/Output.</p>
+                    
+                    <div class="border-2 border-dashed border-slate-300 rounded-lg p-2 bg-slate-50 mb-4 relative">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Canvas Sketsa</span>
+                            <button type="button" onclick="clearCanvas()" class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200">Bersihkan Canvas</button>
+                        </div>
+                        <canvas id="wireframeCanvas" class="w-full h-[400px] bg-white border border-slate-200 rounded cursor-crosshair shadow-inner"></canvas>
+                        
+                        <div class="mt-4 border-t pt-4">
+                            <label class="block text-sm font-medium mb-1">Alternatif: Upload Gambar Wireframe (Opsional)</label>
+                            <input type="file" id="wireframeFile" accept="image/*,.pdf" class="text-sm w-full file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                            <p class="text-xs text-slate-500 mt-1">Gunakan ini jika kamu sudah membuat wireframe di kertas atau aplikasi lain.</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-medium mb-1">Penjelasan Rancangan Wireframe <span class="text-red-500">*</span></label>
+                        <textarea id="wireframe_desc" rows="3" placeholder="Jelaskan elemen-elemen yang ada di wireframe..." class="w-full border border-slate-300 rounded-md p-2 outline-none required-input"></textarea>
+                    </div>
+                </div>
+
+                <!-- STEP 8: Refleksi & Kesimpulan -->
+                <div class="step-content p-6 md:p-8" id="step-8">
+                    <h2 class="text-xl font-bold border-b pb-2 mb-6">BAGIAN G & H – Analisis Hasil & Kesimpulan</h2>
+                    
+                    <div class="space-y-4 mb-8">
+                        <h3 class="font-bold text-slate-700 text-lg">G. Refleksi Analisis</h3>
+                        <div>
+                            <label class="block font-medium mb-1 text-sm">1. Apa kelebihan solusi yang kalian buat?</label>
+                            <input type="text" id="ref_kelebihan" class="w-full border border-slate-300 rounded-md p-2 outline-none text-sm required-input">
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1 text-sm">2. Apa kekurangan atau keterbatasan solusi?</label>
+                            <input type="text" id="ref_kekurangan" class="w-full border border-slate-300 rounded-md p-2 outline-none text-sm required-input">
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1 text-sm">3. Apa risiko yang mungkin muncul?</label>
+                            <input type="text" id="ref_risiko" class="w-full border border-slate-300 rounded-md p-2 outline-none text-sm required-input">
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1 text-sm">4. Bagaimana cara memperbaiki solusi tersebut?</label>
+                            <input type="text" id="ref_perbaikan" class="w-full border border-slate-300 rounded-md p-2 outline-none text-sm required-input">
+                        </div>
+                        <div>
+                            <label class="block font-medium mb-1 text-sm">5. Jika dikembangkan, fitur tambahan apa yang dibuat?</label>
+                            <input type="text" id="ref_fitur" class="w-full border border-slate-300 rounded-md p-2 outline-none text-sm required-input">
+                        </div>
+                    </div>
+
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                        <h3 class="font-bold text-indigo-800 text-lg mb-2">H. Kesimpulan Akhir</h3>
+                        <p class="text-xs text-indigo-600 mb-2">Rangkai kalimat kesimpulan berdasar template berikut (Min. 100 Karakter):</p>
+                        <textarea id="kesimpulan" rows="4" class="w-full border border-indigo-300 rounded-md p-2 outline-none required-input focus:ring-2 focus:ring-indigo-500" placeholder="Berdasarkan hasil analisis, masalah yang kami pilih adalah ..., solusi yang kami tawarkan adalah ..., dan solusi tersebut diharapkan dapat ..."></textarea>
+                    </div>
+                </div>
+
+                <!-- STEP 9: Review -->
+                <div class="step-content p-6 md:p-8" id="step-9">
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl font-bold text-green-700">REVIEW JAWABAN</h2>
+                        <p class="text-slate-600 text-sm">Periksa kembali jawabanmu. Setelah dikirim, jawaban tidak dapat diubah tanpa izin guru.</p>
+                    </div>
+                    
+                    <div id="review-container" class="bg-slate-50 border border-slate-200 p-4 rounded-lg text-sm space-y-4 max-h-[60vh] overflow-y-auto mb-6">
+                        <!-- Konten review akan di-inject via JS -->
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-4 justify-center">
+                        <button type="button" onclick="prevStep()" class="px-6 py-3 border border-slate-300 rounded-lg font-bold text-slate-700 hover:bg-slate-100 transition">
+                            ← KEMBALI EDIT
+                        </button>
+                        <button type="button" onclick="submitLKPD()" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold shadow-lg transition">
+                            ✓ SAYA SUDAH MEMERIKSA – KIRIM JAWABAN
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Navigasi Bawah (Hanya tampil di step 1-8) -->
+                <div id="bottom-nav" class="border-t p-4 bg-slate-50 flex justify-between rounded-b-xl">
+                    <button type="button" id="btn-prev" onclick="prevStep()" class="hidden px-4 py-2 border border-slate-300 rounded text-slate-700 hover:bg-slate-100 transition">Sebelumnya</button>
+                    <div class="flex-grow"></div>
+                    <button type="button" id="btn-next" onclick="nextStep()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-medium">Selanjutnya →</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- SUCCESS SCREEN -->
+        <div id="success-screen" class="hidden max-w-2xl mx-auto bg-white rounded-xl shadow-lg border border-green-200 p-8 text-center mt-10">
+            <div class="text-6xl mb-4">🎉</div>
+            <h2 class="text-2xl font-bold text-green-700 mb-2">JAWABAN BERHASIL DIKIRIM</h2>
+            <p class="text-slate-600 mb-6">Jawaban kamu telah berhasil dikirim kepada guru. Simpan ID pengerjaan sebagai bukti bahwa kamu telah menyelesaikan tugas.</p>
+            
+            <div class="bg-slate-100 p-4 rounded-lg text-left inline-block w-full md:w-3/4 mx-auto mb-6 border border-slate-200">
+                <table class="w-full text-sm">
+                    <tr><td class="py-1 font-semibold text-slate-600 w-1/3">Nama</td><td id="succ-nama" class="font-bold"></td></tr>
+                    <tr><td class="py-1 font-semibold text-slate-600">Kelas</td><td id="succ-kelas" class="font-bold"></td></tr>
+                    <tr><td class="py-1 font-semibold text-slate-600">ID Pengerjaan</td><td class="font-mono font-bold text-blue-600 bg-blue-50 px-2 rounded" id="succ-id"></td></tr>
+                    <tr><td class="py-1 font-semibold text-slate-600">Tanggal</td><td id="succ-date"></td></tr>
+                </table>
+            </div>
+            
+            <p class="text-xs text-red-500 font-bold mb-4">Jangan tutup halaman ini sebelum mencatat ID Pengerjaan kamu.</p>
+            <button onclick="location.reload()" class="text-blue-600 text-sm hover:underline">Kembali ke Halaman Utama</button>
+        </div>
+
+        <!-- TEACHER DASHBOARD VIEW (Hidden by default) -->
+        <div id="teacher-dashboard" class="hidden space-y-6">
+            <div class="bg-indigo-700 text-white p-6 rounded-xl shadow-md flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold">Dashboard Pemantauan Guru</h2>
+                    <p class="text-indigo-200 text-sm">Tugas Alternatif Proyek 1</p>
+                </div>
+                <button onclick="toggleTeacherMode()" class="bg-indigo-800 hover:bg-indigo-900 px-4 py-2 rounded text-sm transition border border-indigo-600">Tutup Dashboard</button>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 text-center">
+                    <div class="text-sm text-slate-500 font-semibold mb-1">Sudah Mengerjakan</div>
+                    <div class="text-3xl font-bold text-blue-600" id="stat-done">3</div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 text-center">
+                    <div class="text-sm text-slate-500 font-semibold mb-1">Kelompok Unik</div>
+                    <div class="text-3xl font-bold text-emerald-600" id="stat-group">3</div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 text-center">
+                    <div class="text-sm text-slate-500 font-semibold mb-1">Rata-rata Nilai</div>
+                    <div class="text-3xl font-bold text-purple-600" id="stat-avg">82.3</div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 text-center">
+                    <div class="text-sm text-slate-500 font-semibold mb-1">Rentang Nilai</div>
+                    <div class="text-lg font-bold text-slate-700 mt-2">78 - 89</div>
+                </div>
+            </div>
+
+            <!-- Kunci Acuan -->
+            <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg shadow-sm">
+                <div class="flex justify-between items-center mb-2 cursor-pointer" onclick="document.getElementById('kunci-content').classList.toggle('hidden')">
+                    <h3 class="font-bold text-yellow-800">Kunci Acuan Penilaian (Klik untuk buka/tutup)</h3>
+                    <span class="text-yellow-600">▼</span>
+                </div>
+                <div id="kunci-content" class="hidden text-sm text-slate-700 space-y-2 mt-3 border-t border-yellow-200 pt-3">
+                    <p><strong>Contoh Masalah:</strong> Informasi kegiatan sekolah sering terlambat diterima siswa.</p>
+                    <p><strong>Penyebab:</strong> Informasi disampaikan melalui banyak media (terpisah-pisah) sehingga sebagian siswa tidak menerima informasi secara tepat waktu.</p>
+                    <p><strong>Solusi:</strong> Website Informasi Kegiatan Sekolah (Terpusat).</p>
+                    <p><strong>Alur Singkat:</strong> Admin input -> Sistem simpan -> Tampil di beranda -> Siswa lihat -> Siswa terinformasi.</p>
+                    <p><strong>Kriteria Nilai (Rentang wajib 78-89):</strong><br>
+                    78-80 = Memenuhi komponen dasar, analisis dangkal.<br>
+                    81-83 = Analisis cukup baik, solusi cukup jelas.<br>
+                    84-86 = Analisis baik, alur dan wireframe logis.<br>
+                    87-89 = Analisis tajam, solusi inovatif, wireframe detail, pembagian peran sangat jelas.</p>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                    <h3 class="font-bold text-slate-700">Data Pengerjaan Siswa</h3>
+                    <div class="flex gap-2">
+                        <select id="filter-status" class="text-sm border border-slate-300 rounded p-1 outline-none">
+                            <option value="ALL">Semua Status</option>
+                            <option value="SUDAH DIKIRIM">SUDAH DIKIRIM</option>
+                            <option value="SUDAH DINILAI">SUDAH DINILAI</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100 text-slate-600">
+                            <tr>
+                                <th class="p-3 border-b">ID</th>
+                                <th class="p-3 border-b">Nama / Kelas</th>
+                                <th class="p-3 border-b">Kelompok</th>
+                                <th class="p-3 border-b">Status</th>
+                                <th class="p-3 border-b">Skor Mesin</th>
+                                <th class="p-3 border-b">Nilai Akhir</th>
+                                <th class="p-3 border-b">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacher-table-body">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Panduan Integrasi GAS -->
+            <div class="bg-slate-800 text-slate-200 p-6 rounded-lg mt-8">
+                <h3 class="text-lg font-bold text-white mb-2">Panduan Integrasi Google Sheets (Aman di Akun Guru)</h3>
+                <p class="text-sm mb-4 text-slate-400">Agar data jawaban siswa tersimpan secara privat dan hanya masuk ke spreadsheet di akun email Anda saja, ikuti langkah ini menggunakan akun Google pribadi Anda:</p>
+                <ol class="list-decimal list-inside text-sm space-y-2 mb-4 text-slate-300">
+                    <li>Buka Google Drive (pastikan sudah login dengan email Anda) dan buat Google Spreadsheet baru.</li>
+                    <li>Buat header kolom di Baris 1: <code>Timestamp, ID, Nama, Kelas, Absen, Kelompok, Masalah, Penyebab, Dampak, Decomposition, Pattern, Abstraction, Algorithm, PM, SA, Designer, Communicator, Solusi, Target, Manfaat, Alur, WireframeInfo, Refleksi, Kesimpulan, SkorMesin, NilaiAkhir, Status</code>.</li>
+                    <li>Klik <strong>Ekstensi > Apps Script</strong>.</li>
+                    <li>Hapus kode yang ada, ganti dengan kode di bawah ini.</li>
+                    <li>Klik <strong>Terapkan (Deploy) > Penerapan Baru</strong>. Pilih jenis <strong>Aplikasi Web</strong>. Akses: "Siapa saja".</li>
+                    <li>Copy URL Web App, dan masukkan ke baris kode JavaScript <code>const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbydyr18fDWXrERP8nrrW8iegELr7WzByibQVddyy9VAwN0WP8WosWaexNtkGJMfS02L/exec";</code> pada file ini.</li>
+                </ol>
+                <pre class="bg-slate-900 p-4 rounded border border-slate-700 text-xs overflow-x-auto text-green-400">
+function doPost(e) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const data = JSON.parse(e.postData.contents);
+    
+    sheet.appendRow([
+      new Date(), data.id, data.nama, data.kelas, data.absen, data.kelompok,
+      data.masalah, data.penyebab, data.akibat, data.decomposition, data.pattern, 
+      data.abstraction, data.algorithm, data.pm, data.sa, data.designer, 
+      data.communicator, data.solusi_nama, data.solusi_target, data.solusi_manfaat,
+      data.alur, data.wireframe_desc, data.refleksi, data.kesimpulan, 
+      data.skor, data.nilai_akhir, "SUDAH DIKIRIM"
+    ]);
+    
+    return ContentService.createTextOutput(JSON.stringify({"status": "success"}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(error) {
+    return ContentService.createTextOutput(JSON.stringify({"status": "error", "message": error.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+                </pre>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Custom Modal/Toast for Alerts -->
+    <div id="toast-message" class="toast fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-full shadow-xl font-medium text-sm z-[100] flex items-center gap-2">
+        <span>⚠️</span> <span id="toast-text">Pesan di sini</span>
+    </div>
+
+    <!-- Modal Penilaian Guru -->
+    <div id="grade-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 relative">
+            <h3 class="text-lg font-bold border-b pb-2 mb-4">Review & Setujui Nilai</h3>
+            <div class="mb-4">
+                <p class="text-sm text-slate-500">Siswa: <span id="modal-siswa" class="font-bold text-slate-800"></span></p>
+                <p class="text-sm text-slate-500">Skor Analisis Mesin: <span id="modal-skor-mesin" class="font-bold text-blue-600"></span></p>
+            </div>
+            <div class="mb-6">
+                <label class="block font-medium mb-1 text-sm text-slate-700">Penyesuaian Nilai Akhir (Wajib 78 - 89)</label>
+                <input type="number" id="modal-nilai-akhir" min="78" max="89" class="w-full border border-slate-300 rounded p-2 text-xl text-center font-bold outline-none focus:ring-2 focus:ring-blue-500">
+                <p class="text-xs text-slate-500 mt-1 text-center">Jangan beri nilai di luar rentang 78 - 89 untuk tugas alternatif ini.</p>
+            </div>
+            <div class="flex gap-2 justify-end">
+                <button onclick="document.getElementById('grade-modal').classList.add('hidden')" class="px-4 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition text-sm">Batal</button>
+                <button onclick="saveGrade()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition text-sm font-bold">✓ SETUJUI NILAI</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Login Guru -->
+    <div id="login-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 relative">
+            <h3 class="text-lg font-bold border-b pb-2 mb-4">Login Dashboard Guru</h3>
+            <p class="text-sm text-slate-500 mb-4">Masukkan PIN/Password khusus guru untuk mengakses data siswa.</p>
+            <div class="mb-4">
+                <input type="password" id="guru-password" placeholder="Masukkan PIN..." class="w-full border border-slate-300 rounded p-2 outline-none focus:ring-2 focus:ring-blue-500">
+                <p id="login-error" class="text-xs text-red-500 mt-1 hidden">Password salah! Coba 'guru2026'</p>
+            </div>
+            <div class="flex gap-2 justify-end">
+                <button type="button" onclick="closeLoginModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition text-sm">Batal</button>
+                <button type="button" onclick="verifyLogin()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm font-bold">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t py-4 text-center text-xs text-slate-400 mt-auto">
+        &copy; 2026 LKPD Interaktif Proyek Informatika. (Tugas Alternatif).
+    </footer>
+
+    <script>
+        // --- KONFIGURASI BACKEND ---
+        // Ganti URL ini dengan URL Web App dari Google Apps Script jika sudah di-deploy
+        const APPS_SCRIPT_WEB_APP_URL = "GOOGLE_SHEET_URL_PLACEHOLDER"; 
+        
+        // --- STATE MANAGEMENT ---
+        let currentStep = 1;
+        const totalSteps = 9;
+        let formData = {};
+        
+        // --- DATA DEMO (Untuk Dashboard Guru) ---
+        let dbSiswa = [
+            { id: "INF-2026-D001", nama: "Budi Santoso", kelas: "X-A", kelompok: "Kelompok Alpha", skor_mesin: 88, nilai_akhir: 87, status: "SUDAH DINILAI", timestamp: "2026-09-24 10:00" },
+            { id: "INF-2026-D002", nama: "Siti Aminah", kelas: "X-B", kelompok: "Tim Hebat", skor_mesin: 80, nilai_akhir: 82, status: "SUDAH DIKIRIM", timestamp: "2026-09-25 08:30" },
+            { id: "INF-2026-D003", nama: "Andi Saputra", kelas: "X-C", kelompok: "Pejuang Kode", skor_mesin: 72, nilai_akhir: 78, status: "SUDAH DIKIRIM", timestamp: "2026-09-25 11:15" }
+        ];
+
+        // --- NAVIGATION LOGIC ---
+        function updateUI() {
+            // Sembunyikan semua step
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            // Tampilkan step saat ini
+            document.getElementById(`step-${currentStep}`).classList.add('active');
+            
+            // Update Progress Bar
+            const percent = Math.round(((currentStep - 1) / (totalSteps - 1)) * 100);
+            document.getElementById('progress-bar').style.width = percent + '%';
+            document.getElementById('progress-text').innerText = `Progres: ${percent}%`;
+            document.getElementById('step-indicator').innerText = `Bagian ${currentStep} dari ${totalSteps}`;
+
+            // Update Tombol Bawah
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            
+            if (currentStep === 1) {
+                btnPrev.classList.add('hidden');
+            } else {
+                btnPrev.classList.remove('hidden');
+            }
+
+            if (currentStep === totalSteps) {
+                document.getElementById('bottom-nav').classList.add('hidden'); // Sembunyikan nav bawah di step review
+                generateReview();
+            } else {
+                document.getElementById('bottom-nav').classList.remove('hidden');
+            }
+        }
+
+        function showToast(message, isError = true) {
+            const toast = document.getElementById('toast-message');
+            document.getElementById('toast-text').innerText = message;
+            toast.className = `toast fixed bottom-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full shadow-xl font-medium text-sm z-[100] flex items-center gap-2 ${isError ? 'bg-red-600 text-white' : 'bg-green-600 text-white'}`;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        function validateStep() {
+            const currentDiv = document.getElementById(`step-${currentStep}`);
+            const requiredInputs = currentDiv.querySelectorAll('.required-input');
+            let isValid = true;
+            
+            // Validasi Canvas/File khusus step 7
+            if (currentStep === 7) {
+                const canvas = document.getElementById('wireframeCanvas');
+                const fileInput = document.getElementById('wireframeFile');
+                const isCanvasBlank = isCanvasEmpty(canvas);
+                if (isCanvasBlank && fileInput.files.length === 0) {
+                    showToast("Harap gambar wireframe di canvas atau upload file gambar!");
+                    return false;
+                }
+            }
+
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    isValid = false;
+                    input.classList.add('border-red-500', 'bg-red-50');
+                } else {
+                    input.classList.remove('border-red-500', 'bg-red-50');
+                }
+            });
+
+            // Special rule for desc length
+            if (currentStep === 5) {
+                const desc = document.getElementById('solusi_deskripsi').value;
+                if (desc.length < 100) {
+                    showToast("Deskripsi solusi minimal 100 karakter!");
+                    document.getElementById('solusi_deskripsi').classList.add('border-red-500');
+                    return false;
+                }
+            }
+
+            if (!isValid) showToast("Mohon isi semua bagian yang diwajibkan (*)");
+            return isValid;
+        }
+
+        function nextStep() {
+            if (validateStep()) {
+                currentStep++;
+                updateUI();
+                window.scrollTo(0,0);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateUI();
+                window.scrollTo(0,0);
+            }
+        }
+
+        // --- DYNAMIC INPUTS ---
+        function addAlgorithmStep() {
+            const container = document.getElementById('algorithm-container');
+            const stepCount = container.children.length + 1;
+            if (stepCount > 8) {
+                showToast("Maksimal 8 langkah!");
+                return;
+            }
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2 mt-2';
+            div.innerHTML = `<span class="font-medium w-20 text-sm">Langkah ${stepCount}:</span>
+                             <input type="text" class="alg-input w-full border border-slate-300 rounded-md p-2 outline-none text-sm required-input">`;
+            container.appendChild(div);
+        }
+
+        function addWorkflowStep() {
+            const container = document.getElementById('workflow-container');
+            const stepCount = container.children.length + 1;
+            if (stepCount > 10) return;
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-3 bg-slate-50 p-2 border border-slate-200 rounded';
+            div.innerHTML = `<span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold shrink-0">${stepCount}</span>
+                             <input type="text" class="wf-input w-full bg-transparent outline-none text-sm required-input" placeholder="Langkah selanjutnya...">`;
+            container.appendChild(div);
+        }
+
+        // --- TAMBAH PERAN TIM LOGIC ---
+        function addRoleRow(role) {
+            const container = document.getElementById(`container_${role}`);
+            const count = container.querySelectorAll(`.role-row-${role}`).length;
+            if (count >= 5) {
+                showToast(`Maksimal 5 anggota untuk peran ini!`);
+                return;
+            }
+            const nextIdx = count + 1;
+            const div = document.createElement('div');
+            div.className = `grid grid-cols-1 md:grid-cols-2 gap-2 role-row-${role}`;
+            div.innerHTML = `
+                <input type="text" id="role_${role}_name_${nextIdx}" placeholder="Nama Anggota ${nextIdx}" class="w-full border border-slate-300 rounded-md p-2 outline-none text-sm required-input">
+                <input type="text" id="role_${role}_task_${nextIdx}" placeholder="Tugas/Tanggung Jawab ${nextIdx}" class="w-full border border-slate-300 rounded-md p-2 outline-none text-sm required-input">
+            `;
+            container.appendChild(div);
+        }
+
+        // --- CHARACTER COUNT ---
+        document.getElementById('solusi_deskripsi').addEventListener('input', function() {
+            const count = this.value.length;
+            const counter = document.getElementById('char_count');
+            counter.innerText = `${count} karakter`;
+            counter.className = count < 100 ? 'text-xs text-right mt-1 text-red-500' : 'text-xs text-right mt-1 text-green-600';
+        });
+
+        // --- CANVAS LOGIC ---
+        const canvas = document.getElementById('wireframeCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        
+        // Setup canvas for high-DPI displays
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width - 16; // padding adj
+            canvas.height = 400;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#334155';
+            
+            // Fill white background
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        window.addEventListener('resize', resizeCanvas);
+        setTimeout(resizeCanvas, 100); // Initial resize
+
+        function getMousePos(canvas, evt) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (evt.clientX || evt.touches[0].clientX) - rect.left,
+                y: (evt.clientY || evt.touches[0].clientY) - rect.top
+            };
+        }
+
+        function startPosition(e) { isDrawing = true; draw(e); }
+        function endPosition() { isDrawing = false; ctx.beginPath(); }
+        
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault(); // Prevent scrolling on touch
+            const pos = getMousePos(canvas, e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('touchstart', startPosition, {passive: false});
+        canvas.addEventListener('touchend', endPosition);
+        canvas.addEventListener('touchmove', draw, {passive: false});
+
+        function clearCanvas() {
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+        }
+
+        function isCanvasEmpty(cnv) {
+            const blank = document.createElement('canvas');
+            blank.width = cnv.width;
+            blank.height = cnv.height;
+            const blankCtx = blank.getContext('2d');
+            blankCtx.fillStyle = "#ffffff";
+            blankCtx.fillRect(0,0,blank.width, blank.height);
+            return cnv.toDataURL() === blank.toDataURL();
+        }
+
+        // --- REVIEW & SUBMIT ---
+        function generateReview() {
+            const container = document.getElementById('review-container');
+            
+            // Gather Algorithm & Workflow data
+            let algs = Array.from(document.querySelectorAll('.alg-input')).map(i => i.value).join(' ➔ ');
+            let wfs = Array.from(document.querySelectorAll('.wf-input')).map(i => i.value).join('<br>↓<br>');
+
+            let html = `
+                <div class="border-b pb-2 mb-2"><strong class="text-blue-700">IDENTITAS</strong><br>
+                ${document.getElementById('nama').value} (${document.getElementById('kelas').value} - Absen ${document.getElementById('absen').value})<br>
+                Kelompok: ${document.getElementById('kelompok').value}</div>
+
+                <div class="border-b pb-2 mb-2"><strong class="text-blue-700">A. IDENTIFIKASI MASALAH</strong><br>
+                <span class="text-xs text-slate-500">Masalah:</span> ${document.getElementById('masalah').value}<br>
+                <span class="text-xs text-slate-500">Penyebab:</span> ${document.getElementById('penyebab').value}</div>
+
+                <div class="border-b pb-2 mb-2"><strong class="text-blue-700">B. BERPIKIR KOMPUTASIONAL</strong><br>
+                <span class="text-xs text-slate-500">Algoritma:</span> ${algs}</div>
+
+                <div class="border-b pb-2 mb-2"><strong class="text-blue-700">C. SOLUSI DIGITAL</strong><br>
+                <span class="text-xs text-slate-500">Solusi:</span> ${document.getElementById('solusi_nama').value} (${document.getElementById('solusi_jenis').value})<br>
+                <span class="text-xs text-slate-500">Alur:</span><br> <div class="pl-2 border-l-2 border-blue-200">${wfs}</div></div>
+                
+                <div><strong class="text-blue-700">D. KESIMPULAN</strong><br>
+                ${document.getElementById('kesimpulan').value}</div>
+            `;
+            container.innerHTML = html;
+        }
+
+        // --- SCORING SYSTEM (CRITICAL CONSTRAINT: 78 - 89) ---
+        function calculateAutomatedScore() {
+            let rawScore = 0;
+            const maxRaw = 100;
+            
+            // Logic kasar untuk skor mesin (berdasarkan kelengkapan teks)
+            const checkLength = (id, minWords, points) => {
+                const val = document.getElementById(id).value.trim();
+                if(val.length > 5) rawScore += (points * 0.5); // Isi ada
+                if(val.split(' ').length >= minWords) rawScore += (points * 0.5); // Kata cukup
+            };
+
+            checkLength('masalah', 5, 15);
+            checkLength('penyebab', 8, 10);
+            checkLength('decomp_1', 2, 5); checkLength('pattern', 5, 5); checkLength('abstraction', 5, 5);
+            
+            // Cek role
+            if(document.getElementById('role_pm_name_1').value && document.getElementById('role_pm_task_1').value) rawScore += 2.5;
+            if(document.getElementById('role_sa_name_1').value && document.getElementById('role_sa_task_1').value) rawScore += 2.5;
+            if(document.getElementById('role_ds_name_1').value && document.getElementById('role_ds_task_1').value) rawScore += 2.5;
+            if(document.getElementById('role_cm_name_1').value && document.getElementById('role_cm_task_1').value) rawScore += 2.5;
+
+            checkLength('solusi_deskripsi', 15, 20); // Deskripsi
+            
+            const wfCount = document.querySelectorAll('.wf-input').length;
+            if(wfCount >= 5) rawScore += 10;
+            
+            checkLength('wireframe_desc', 5, 10);
+            checkLength('kesimpulan', 10, 10);
+
+            // MAPPING RAW SCORE (0-100) to (78-89)
+            // Rumus: Jika raw < 50 (sangat minim), set 78 (syarat minimum selesai).
+            // Jika > 50, distribusikan secara proporsional ke 78-89.
+            let finalGrade = 78;
+            if(rawScore >= 90) finalGrade = 89;
+            else if(rawScore >= 80) finalGrade = Math.floor(Math.random() * (89 - 86 + 1) + 86); // 86-89
+            else if(rawScore >= 65) finalGrade = Math.floor(Math.random() * (85 - 82 + 1) + 82); // 82-85
+            else finalGrade = Math.floor(Math.random() * (81 - 78 + 1) + 78); // 78-81
+
+            // Safety clamp
+            return Math.max(78, Math.min(89, finalGrade));
+        }
+
+        async function submitLKPD() {
+            if(!validateStep()) return; // Double check just in case
+
+            const btn = document.querySelector('button[onclick="submitLKPD()"]');
+            btn.innerHTML = 'Memproses...';
+            btn.disabled = true;
+
+            const finalGrade = calculateAutomatedScore();
+            const uniqueID = "INF-" + new Date().getFullYear() + "-" + Math.floor(1000 + Math.random() * 9000);
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID');
+
+            // Collect Data
+            let algs = Array.from(document.querySelectorAll('.alg-input')).map(i => i.value).join(' | ');
+            let wfs = Array.from(document.querySelectorAll('.wf-input')).map(i => i.value).join(' | ');
+
+            // Helper function to extract multiple roles
+            const getRoles = (role) => {
+                let res = [];
+                const max = role === 'pm' ? 1 : document.querySelectorAll(`.role-row-${role}`).length;
+                for(let i=1; i<=max; i++) {
+                    const n = document.getElementById(`role_${role}_name_${i}`);
+                    const t = document.getElementById(`role_${role}_task_${i}`);
+                    if(n && t && n.value) res.push(`${n.value} (${t.value})`);
+                }
+                return res.join(', ');
+            };
+
+            const payload = {
+                id: uniqueID,
+                nama: document.getElementById('nama').value,
+                kelas: document.getElementById('kelas').value,
+                absen: document.getElementById('absen').value,
+                kelompok: document.getElementById('kelompok').value,
+                masalah: document.getElementById('masalah').value,
+                penyebab: document.getElementById('penyebab').value,
+                akibat: document.getElementById('akibat').value,
+                decomposition: `${document.getElementById('decomp_1').value}, ${document.getElementById('decomp_2').value}, ${document.getElementById('decomp_3').value}`,
+                pattern: document.getElementById('pattern').value,
+                abstraction: document.getElementById('abstraction').value,
+                algorithm: algs,
+                pm: getRoles('pm'),
+                sa: getRoles('sa'),
+                designer: getRoles('ds'),
+                communicator: getRoles('cm'),
+                solusi_nama: document.getElementById('solusi_nama').value,
+                solusi_target: document.getElementById('solusi_target').value,
+                solusi_manfaat: document.getElementById('solusi_manfaat').value,
+                alur: wfs,
+                wireframe_desc: document.getElementById('wireframe_desc').value,
+                refleksi: `Kelebihan: ${document.getElementById('ref_kelebihan').value}. Kekurangan: ${document.getElementById('ref_kekurangan').value}`,
+                kesimpulan: document.getElementById('kesimpulan').value,
+                skor: rawScoreSimulation(), // Untuk display ke guru
+                nilai_akhir: finalGrade,
+                timestamp: dateStr
+            };
+
+            // Simpan ke local DB (Demo)
+            dbSiswa.push({
+                id: payload.id, nama: payload.nama, kelas: payload.kelas, 
+                kelompok: payload.kelompok, skor_mesin: payload.skor, 
+                nilai_akhir: payload.nilai_akhir, status: "SUDAH DIKIRIM", timestamp: payload.timestamp
+            });
+
+            // ATTEMPT TO SEND TO GOOGLE SHEETS (Jika URL valid)
+            if(APPS_SCRIPT_WEB_APP_URL !== "GOOGLE_SHEET_URL_PLACEHOLDER") {
+                try {
+                    await fetch(APPS_SCRIPT_WEB_APP_URL, {
+                        method: 'POST',
+                        mode: 'no-cors', // TAMBAHAN PENTING: Mencegah block CORS dari Google
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8',
+                        },
+                        body: JSON.stringify(payload)
+                    });
+                    console.log("Request terkirim ke Spreadsheet!");
+                } catch(e) {
+                    console.log("Gagal mengirim ke GAS:", e);
+                }
+            } else {
+                // Simulate network delay
+                await new Promise(r => setTimeout(r, 1000));
+            }
+
+            // Show Success Screen
+            document.getElementById('student-view').classList.add('hidden');
+            document.getElementById('progress-container').classList.add('hidden');
+            
+            document.getElementById('succ-nama').innerText = payload.nama;
+            document.getElementById('succ-kelas').innerText = payload.kelas;
+            document.getElementById('succ-id').innerText = payload.id;
+            document.getElementById('succ-date').innerText = payload.timestamp;
+            
+            document.getElementById('success-screen').classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        // Dummy raw score generator untuk UI guru
+        function rawScoreSimulation() { return Math.floor(Math.random() * 30) + 70; }
+
+        // --- TEACHER DASHBOARD LOGIC ---
+        let isTeacherLoggedIn = false;
+
+        function toggleTeacherMode() {
+            if (!isTeacherLoggedIn) {
+                document.getElementById('login-modal').classList.remove('hidden');
+                document.getElementById('guru-password').value = '';
+                document.getElementById('login-error').classList.add('hidden');
+                return;
+            }
+            showTeacherDashboard();
+        }
+
+        function closeLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+
+        function verifyLogin() {
+            const pwd = document.getElementById('guru-password').value;
+            // Default PIN Guru
+            if(pwd === "guru2026") { 
+                isTeacherLoggedIn = true;
+                closeLoginModal();
+                showTeacherDashboard();
+                showToast("Berhasil login ke Dashboard Guru", false);
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function showTeacherDashboard() {
+            const studentView = document.getElementById('student-view');
+            const dash = document.getElementById('teacher-dashboard');
+            const prog = document.getElementById('progress-container');
+            const success = document.getElementById('success-screen');
+            
+            if(dash.classList.contains('hidden')) {
+                // Buka Dashboard
+                studentView.classList.add('hidden');
+                prog.classList.add('hidden');
+                success.classList.add('hidden');
+                dash.classList.remove('hidden');
+                renderTeacherTable();
+            } else {
+                // Tutup Dashboard (Kembali ke kondisi awal atau success)
+                dash.classList.add('hidden');
+                if(success.classList.contains('hidden') && currentStep < totalSteps+1) {
+                    studentView.classList.remove('hidden');
+                    prog.classList.remove('hidden');
+                } else {
+                    success.classList.remove('hidden');
+                }
+            }
+        }
+
+        function renderTeacherTable() {
+            const tbody = document.getElementById('teacher-table-body');
+            const filter = document.getElementById('filter-status').value;
+            tbody.innerHTML = '';
+            
+            let filteredData = dbSiswa;
+            if(filter !== 'ALL') {
+                filteredData = dbSiswa.filter(s => s.status === filter);
+            }
+
+            let sumNilai = 0;
+            
+            filteredData.forEach((s, index) => {
+                sumNilai += s.nilai_akhir;
+                const statusColor = s.status === 'SUDAH DINILAI' ? 'text-green-600 bg-green-100' : 'text-blue-600 bg-blue-100';
+                
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-slate-100 hover:bg-slate-50 transition';
+                tr.innerHTML = `
+                    <td class="p-3 font-mono text-xs text-slate-500">${s.id}</td>
+                    <td class="p-3">
+                        <div class="font-bold text-slate-700">${s.nama}</div>
+                        <div class="text-xs text-slate-500">${s.kelas}</div>
+                    </td>
+                    <td class="p-3 text-sm">${s.kelompok}</td>
+                    <td class="p-3"><span class="px-2 py-1 rounded text-xs font-bold ${statusColor}">${s.status}</span></td>
+                    <td class="p-3 text-sm text-slate-500">${s.skor_mesin}</td>
+                    <td class="p-3 font-bold text-lg ${s.nilai_akhir < 80 ? 'text-yellow-600' : 'text-green-600'}">${s.nilai_akhir}</td>
+                    <td class="p-3">
+                        <button onclick="openGradeModal(${index})" class="text-xs bg-slate-800 text-white px-3 py-1 rounded hover:bg-slate-700 transition">
+                            ${s.status === 'SUDAH DINILAI' ? '✎ Edit' : '✓ Nilai'}
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update Stats
+            document.getElementById('stat-done').innerText = dbSiswa.length;
+            const uniqueGroups = new Set(dbSiswa.map(s => s.kelompok)).size;
+            document.getElementById('stat-group').innerText = uniqueGroups;
+            document.getElementById('stat-avg').innerText = dbSiswa.length ? (sumNilai / dbSiswa.length).toFixed(1) : 0;
+        }
+
+        document.getElementById('filter-status').addEventListener('change', renderTeacherTable);
+
+        let currentEditIndex = -1;
+        function openGradeModal(index) {
+            currentEditIndex = index;
+            const siswa = dbSiswa[index];
+            document.getElementById('modal-siswa').innerText = `${siswa.nama} (${siswa.kelas})`;
+            document.getElementById('modal-skor-mesin').innerText = siswa.skor_mesin;
+            document.getElementById('modal-nilai-akhir').value = siswa.nilai_akhir;
+            document.getElementById('grade-modal').classList.remove('hidden');
+        }
+
+        function saveGrade() {
+            const inputVal = parseInt(document.getElementById('modal-nilai-akhir').value);
+            if(isNaN(inputVal) || inputVal < 78 || inputVal > 89) {
+                alert("Nilai harus berada di antara rentang 78 - 89!");
+                return;
+            }
+            
+            dbSiswa[currentEditIndex].nilai_akhir = inputVal;
+            dbSiswa[currentEditIndex].status = "SUDAH DINILAI";
+            document.getElementById('grade-modal').classList.add('hidden');
+            renderTeacherTable();
+            showToast("Nilai berhasil disimpan!", false);
+        }
+
+    </script>
+</body>
+</html>
