@@ -565,7 +565,7 @@ function doPost(e) {
     <script>
         // --- KONFIGURASI BACKEND ---
         // Ganti URL ini dengan URL Web App dari Google Apps Script jika sudah di-deploy
-        const APPS_SCRIPT_WEB_APP_URL = "GOOGLE_SHEET_URL_PLACEHOLDER"; 
+        const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyiHadWmudOC85KC5HGYd5mCWEGdnkza9Iwu3v7eiLZqrzEjFFi6Vhbg7pTa_QGqLCrwg/exec"; 
         
         // --- STATE MANAGEMENT ---
         let currentStep = 1;
@@ -929,7 +929,7 @@ function doPost(e) {
             });
 
             // ATTEMPT TO SEND TO GOOGLE SHEETS (Jika URL valid)
-            if(APPS_SCRIPT_WEB_APP_URL !== "GOOGLE_SHEET_URL_PLACEHOLDER") {
+            if(APPS_SCRIPT_WEB_APP_URL !== "https://script.google.com/macros/s/AKfycbyiHadWmudOC85KC5HGYd5mCWEGdnkza9Iwu3v7eiLZqrzEjFFi6Vhbg7pTa_QGqLCrwg/exec") {
                 try {
                     await fetch(APPS_SCRIPT_WEB_APP_URL, {
                         method: 'POST',
