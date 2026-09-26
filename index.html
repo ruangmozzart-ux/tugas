@@ -12,9 +12,6 @@
         .step-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Canvas Styling */
-        #wireframeCanvas { cursor: crosshair; background-image: radial-gradient(#d1d5db 1px, transparent 1px); background-size: 20px 20px; }
-        
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -283,53 +280,9 @@
                     </div>
                 </section>
 
-                <!-- Step 8: Wireframe -->
+                <!-- Step 8: Refleksi -->
                 <section id="step8" class="step-content">
-                    <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Bagian 8: Sketsa / Wireframe</h2>
-                    <p class="mb-4 text-sm text-gray-600">Buat rancangan antarmuka atau topologi. Pilih salah satu metode di bawah ini.</p>
-                    
-                    <div class="flex border-b mb-4">
-                        <button class="wf-tab px-4 py-2 border-b-2 font-medium border-blue-600 text-blue-600" onclick="switchTab('draw')">Pilihan A: Gambar Digital</button>
-                        <button class="wf-tab px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700" onclick="switchTab('upload')">Pilihan B: Upload Gambar</button>
-                    </div>
-
-                    <!-- Canvas -->
-                    <div id="tab_draw" class="block">
-                        <div class="bg-gray-100 p-2 flex space-x-2 rounded-t-lg border border-b-0">
-                            <button onclick="setTool('rect')" class="p-1 px-3 bg-white border rounded text-xs hover:bg-gray-50">Kotak (Card)</button>
-                            <button onclick="setTool('circle')" class="p-1 px-3 bg-white border rounded text-xs hover:bg-gray-50">Bulat (Image/Avatar)</button>
-                            <button onclick="setTool('line')" class="p-1 px-3 bg-white border rounded text-xs hover:bg-gray-50">Garis</button>
-                            <button onclick="setTool('text')" class="p-1 px-3 bg-white border rounded text-xs hover:bg-gray-50">Teks</button>
-                            <div class="flex-grow"></div>
-                            <button onclick="clearCanvas()" class="p-1 px-3 bg-red-100 text-red-700 border border-red-200 rounded text-xs hover:bg-red-200">Hapus Semua</button>
-                        </div>
-                        <canvas id="wireframeCanvas" width="800" height="400" class="w-full border rounded-b-lg bg-white touch-none"></canvas>
-                        <p class="text-xs text-gray-500 mt-2">*Gunakan mouse atau sentuhan untuk menggambar tata letak dasar aplikasi.</p>
-                    </div>
-
-                    <!-- Upload -->
-                    <div id="tab_upload" class="hidden">
-                        <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-gray-50">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                            </svg>
-                            <p class="mt-2 text-sm text-gray-600">Pilih file gambar atau PDF (Maks 2MB)</p>
-                            <input type="file" id="wf_upload" accept=".jpg,.jpeg,.png,.pdf" class="hidden" onchange="handleFileUpload(event)">
-                            <button onclick="document.getElementById('wf_upload').click()" class="mt-4 bg-white border border-gray-300 rounded-md shadow-sm px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Pilih File</button>
-                            <div id="file_name_display" class="mt-3 text-sm font-bold text-blue-600"></div>
-                        </div>
-                        <p class="text-xs text-red-500 mt-2">*Catatan: Demi kelancaran pengiriman, ukuran file dibatasi maksimal 2MB. Gunakan kompresi gambar jika file terlalu besar.</p>
-                    </div>
-
-                    <div class="mt-6">
-                        <label class="block font-medium mb-1">Penjelasan Wireframe</label>
-                        <textarea id="wf_desc" rows="2" class="w-full border rounded-lg p-3 bg-gray-50" placeholder="Jelaskan elemen apa saja yang ada pada rancangan tersebut..."></textarea>
-                    </div>
-                </section>
-
-                <!-- Step 9: Refleksi -->
-                <section id="step9" class="step-content">
-                    <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Bagian 9: Refleksi & Kesimpulan</h2>
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Bagian 8: Refleksi & Kesimpulan</h2>
                     <div class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -363,9 +316,9 @@
                     </div>
                 </section>
 
-                <!-- Step 10: Review -->
-                <section id="step10" class="step-content">
-                    <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Bagian 10: Review Jawaban</h2>
+                <!-- Step 9: Review -->
+                <section id="step9" class="step-content">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Bagian 9: Review Jawaban</h2>
                     <p class="text-sm text-red-600 mb-4 font-semibold" id="review_warning"></p>
                     
                     <div id="review_container" class="space-y-6 text-sm bg-gray-50 p-6 rounded-xl border max-h-[500px] overflow-y-auto">
@@ -543,21 +496,19 @@
 
         // --- STATE MANAGEMENT ---
         let currentStep = 1;
-        const totalSteps = 10;
-        let fileBase64 = null;
+        const totalSteps = 9;
         let isTeacherMode = false;
         let rawData = []; // Store teacher data
 
         const steps = [
             "Identitas", "Petunjuk", "Masalah", "CT", "Peran", 
-            "Solusi", "Alur", "Wireframe", "Refleksi", "Review"
+            "Solusi", "Alur", "Refleksi", "Review"
         ];
 
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', async () => {
             initStepper();
             initDynamicInputs();
-            initCanvas();
             
             // Auto-save interval (every 10 seconds)
             setInterval(saveDraft, 10000);
@@ -650,7 +601,7 @@
             if (step === 4) requiredIds = ['ct_dec_1', 'ct_dec_2', 'ct_dec_3', 'ct_pattern', 'ct_abs_penting', 'ct_abs_tidak'];
             if (step === 5) requiredIds = ['role_pm_nama', 'role_pm_tugas', 'role_sa_nama', 'role_sa_tugas', 'role_des_nama', 'role_des_tugas', 'role_com_nama', 'role_com_tugas'];
             if (step === 6) requiredIds = ['sol_nama', 'sol_jenis', 'sol_deskripsi', 'sol_target', 'sol_manfaat'];
-            if (step === 9) requiredIds = ['ref_kelebihan', 'ref_kekurangan', 'ref_kendala', 'ref_solusi_kendala', 'ref_pengembangan', 'ref_kesimpulan'];
+            if (step === 8) requiredIds = ['ref_kelebihan', 'ref_kekurangan', 'ref_kendala', 'ref_solusi_kendala', 'ref_pengembangan', 'ref_kesimpulan'];
 
             requiredIds.forEach(id => {
                 const el = document.getElementById(id);
@@ -689,7 +640,7 @@
                 if (!alurValid) { valid = false; showToast("Minimal 5 langkah alur harus diisi", true); }
             }
 
-            if (step === 9) {
+            if (step === 8) {
                 const kes = document.getElementById('ref_kesimpulan').value;
                 if (kes.length < 100) {
                     valid = false;
@@ -752,108 +703,6 @@
             document.getElementById(counterId).innerText = el.value.length;
         }
 
-        let canvas, ctx, isDrawing = false, currentTool = 'rect', startX, startY;
-        function initCanvas() {
-            canvas = document.getElementById('wireframeCanvas');
-            ctx = canvas.getContext('2d');
-            
-            // Mouse Events
-            canvas.addEventListener('mousedown', startDraw);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', endDraw);
-            canvas.addEventListener('mouseout', endDraw);
-
-            // Touch Events for Mobile/Tablet
-            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); const touch = e.touches[0]; const mouseEvent = new MouseEvent('mousedown', { clientX: touch.clientX, clientY: touch.clientY }); canvas.dispatchEvent(mouseEvent); }, {passive: false});
-            canvas.addEventListener('touchmove', (e) => { e.preventDefault(); const touch = e.touches[0]; const mouseEvent = new MouseEvent('mousemove', { clientX: touch.clientX, clientY: touch.clientY }); canvas.dispatchEvent(mouseEvent); }, {passive: false});
-            canvas.addEventListener('touchend', () => { const mouseEvent = new MouseEvent('mouseup', {}); canvas.dispatchEvent(mouseEvent); });
-        }
-
-        function setTool(tool) { currentTool = tool; }
-        function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
-        
-        // Simple shape drawing memory array to simulate real drawing isn't needed, we just draw directly for sketch simplicity
-        let snapshot;
-        function startDraw(e) {
-            isDrawing = true;
-            const rect = canvas.getBoundingClientRect();
-            startX = e.clientX - rect.left;
-            startY = e.clientY - rect.top;
-            snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        }
-
-        function draw(e) {
-            if (!isDrawing) return;
-            const rect = canvas.getBoundingClientRect();
-            const currentX = e.clientX - rect.left;
-            const currentY = e.clientY - rect.top;
-            
-            ctx.putImageData(snapshot, 0, 0); // Restore to draw preview
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 2;
-            ctx.fillStyle = '#fff';
-
-            if (currentTool === 'rect') {
-                ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
-            } else if (currentTool === 'circle') {
-                ctx.beginPath();
-                const radius = Math.sqrt(Math.pow(currentX - startX, 2) + Math.pow(currentY - startY, 2));
-                ctx.arc(startX, startY, radius, 0, 2 * Math.PI);
-                ctx.stroke();
-            } else if (currentTool === 'line') {
-                ctx.beginPath();
-                ctx.moveTo(startX, startY);
-                ctx.lineTo(currentX, currentY);
-                ctx.stroke();
-            }
-        }
-
-        function endDraw(e) {
-            if(!isDrawing) return;
-            isDrawing = false;
-            if(currentTool === 'text') {
-                showCustomModal({
-                    title: "Tambah Teks", 
-                    desc: "Masukkan teks untuk wireframe:", 
-                    type: "prompt_text"
-                }).then(text => {
-                    if(text) {
-                        ctx.font = "16px Inter, sans-serif";
-                        ctx.fillStyle = '#333';
-                        ctx.fillText(text, startX, startY);
-                    }
-                });
-            }
-        }
-
-        function switchTab(tab) {
-            document.getElementById('tab_draw').style.display = tab === 'draw' ? 'block' : 'none';
-            document.getElementById('tab_upload').style.display = tab === 'upload' ? 'block' : 'none';
-            
-            document.querySelectorAll('.wf-tab').forEach(el => {
-                el.classList.remove('border-blue-600', 'text-blue-600');
-                el.classList.add('border-transparent', 'text-gray-500');
-            });
-            event.target.classList.remove('border-transparent', 'text-gray-500');
-            event.target.classList.add('border-blue-600', 'text-blue-600');
-        }
-
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            if (file.size > 2 * 1024 * 1024) { // 2MB limit
-                showToast("Ukuran file maksimal 2MB. Silakan kompres gambar Anda.", true);
-                event.target.value = '';
-                return;
-            }
-            document.getElementById('file_name_display').innerText = file.name;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                fileBase64 = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
         function gatherFormData() {
             const data = {};
             // Input text & textarea collection
@@ -862,16 +711,6 @@
                     data[el.id] = el.value;
                 }
             });
-
-            // Wireframe decision
-            const isUploadTab = document.getElementById('tab_upload').style.display === 'block';
-            if (isUploadTab && fileBase64) {
-                data.wireframe_data = fileBase64;
-                data.wireframe_type = 'upload';
-            } else {
-                data.wireframe_data = canvas.toDataURL('image/jpeg', 0.5); // compress
-                data.wireframe_type = 'canvas';
-            }
 
             // Gather dynamic lists
             data.list_algo = [];
@@ -1192,32 +1031,6 @@
 
             let html = `
                 <div class="mb-6">
-                    <h5 class="font-bold text-gray-800 mb-2 border-b">1. Identitas</h5>
-                    <div class="grid grid-cols-2 gap-2 text-gray-700">
-                        <p><strong>Nama:</strong> ${data.Nama}</p>
-                        <p><strong>Kelas/Absen:</strong> ${data.Kelas} / ${data.Absen}</p>
-                        <p><strong>Kelompok:</strong> ${data.Kelompok}</p>
-                        <p><strong>Anggota:</strong> ${data.Anggota1}, ${data.Anggota2}, ${data.Anggota3}</p>
-                    </div>
-                </div>
-
-                <div class="mb-6">
-                    <h5 class="font-bold text-gray-800 mb-2 border-b">2. Identifikasi Masalah</h5>
-                    <p class="mb-2"><strong>Masalah:</strong> ${data.Masalah}</p>
-                    <p class="mb-2 text-gray-600 text-xs text-justify"><strong>Deskripsi:</strong> ${data.DeskripsiMasalah}</p>
-                    <p class="mb-2"><strong>Penyebab:</strong> ${data.Penyebab}</p>
-                    <p class="mb-2"><strong>Dampak:</strong> ${data.Dampak}</p>
-                </div>
-
-                <div class="mb-6">
-                    <h5 class="font-bold text-gray-800 mb-2 border-b">3. Berpikir Komputasional</h5>
-                    <p class="mb-2"><strong>Decomposition:</strong> ${data.Decomposition}</p>
-                    <p class="mb-2"><strong>Pattern:</strong> ${data.PatternRecognition}</p>
-                    <p class="mb-2"><strong>Abstraction:</strong> ${data.Abstraction}</p>
-                    <p class="mb-2"><strong>Algorithm:</strong> ${data.Algorithm}</p>
-                </div>
-
-                <div class="mb-6">
                     <h5 class="font-bold text-gray-800 mb-2 border-b">4. Solusi Digital</h5>
                     <p class="mb-2"><strong>Nama (Jenis):</strong> ${data.NamaSolusi} (${data.JenisSolusi})</p>
                     <p class="mb-2"><strong>Fitur:</strong> ${data.Fitur1}, ${data.Fitur2}, ${data.Fitur3}</p>
@@ -1225,14 +1038,7 @@
                 </div>
 
                 <div class="mb-6">
-                    <h5 class="font-bold text-gray-800 mb-2 border-b">5. Wireframe</h5>
-                    ${data.Wireframe && data.Wireframe.length > 20 ? 
-                        (data.Wireframe.startsWith('data:image') ? `<img src="${data.Wireframe}" class="w-full border rounded shadow-sm max-h-64 object-contain bg-gray-100">` : `<a href="${data.Wireframe}" target="_blank" class="text-blue-600 underline">Lihat File Upload</a>`)
-                    : '<p class="text-gray-400 italic">Tidak ada wireframe</p>'}
-                </div>
-
-                <div class="mb-6">
-                    <h5 class="font-bold text-gray-800 mb-2 border-b">6. Refleksi & Kesimpulan</h5>
+                    <h5 class="font-bold text-gray-800 mb-2 border-b">5. Refleksi & Kesimpulan</h5>
                     <p class="mb-2"><strong>Kelebihan:</strong> ${data.RefleksiKelebihan}</p>
                     <p class="mb-2"><strong>Kesimpulan:</strong> ${data.Kesimpulan}</p>
                 </div>
