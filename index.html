@@ -1031,16 +1031,49 @@
 
             let html = `
                 <div class="mb-6">
-                    <h5 class="font-bold text-gray-800 mb-2 border-b">4. Solusi Digital</h5>
-                    <p class="mb-2"><strong>Nama (Jenis):</strong> ${data.NamaSolusi} (${data.JenisSolusi})</p>
-                    <p class="mb-2"><strong>Fitur:</strong> ${data.Fitur1}, ${data.Fitur2}, ${data.Fitur3}</p>
-                    <p class="mb-2 text-gray-600 text-xs text-justify"><strong>Alur Kerja:</strong> ${data.AlurSolusi}</p>
+                    <h5 class="font-bold text-blue-800 mb-2 border-b border-blue-200 pb-1">1. Identifikasi Masalah</h5>
+                    <p class="mb-1 text-xs"><strong>Masalah Utama:</strong> ${data.Masalah || '-'}</p>
+                    <p class="mb-1 text-xs"><strong>Deskripsi:</strong> ${data.DeskripsiMasalah || '-'}</p>
+                    <p class="mb-1 text-xs"><strong>Pihak Terdampak:</strong> ${data.PihakTerdampak || '-'}</p>
+                    <p class="mb-1 text-xs"><strong>Penyebab:</strong> ${data.Penyebab || '-'}</p>
+                    <p class="mb-1 text-xs"><strong>Pentingnya:</strong> ${data.Pentingnya || '-'}</p>
+                    <p class="mb-1 text-xs text-justify"><strong>Dampak jika dibiarkan:</strong> ${data.Dampak || '-'}</p>
                 </div>
 
                 <div class="mb-6">
-                    <h5 class="font-bold text-gray-800 mb-2 border-b">5. Refleksi & Kesimpulan</h5>
-                    <p class="mb-2"><strong>Kelebihan:</strong> ${data.RefleksiKelebihan}</p>
-                    <p class="mb-2"><strong>Kesimpulan:</strong> ${data.Kesimpulan}</p>
+                    <h5 class="font-bold text-blue-800 mb-2 border-b border-blue-200 pb-1">2. Berpikir Komputasional</h5>
+                    <p class="mb-1 text-xs"><strong>Decomposition:</strong> ${data.Decomposition || '-'}</p>
+                    <p class="mb-1 text-xs"><strong>Pattern Recognition:</strong> ${data.PatternRecognition || '-'}</p>
+                    <p class="mb-1 text-xs"><strong>Abstraction:</strong> ${data.Abstraction || '-'}</p>
+                    <p class="mb-1 text-xs"><strong>Algorithm:</strong> ${data.Algorithm || '-'}</p>
+                </div>
+
+                <div class="mb-6">
+                    <h5 class="font-bold text-blue-800 mb-2 border-b border-blue-200 pb-1">3. Pembagian Peran</h5>
+                    <ul class="text-xs list-disc pl-4 space-y-1">
+                        <li><strong>Project Manager:</strong> ${data.PM_Nama || '-'} <br><span class="text-gray-500">Tugas: ${data.PM_Tugas || '-'}</span></li>
+                        <li><strong>System Analyst:</strong> ${data.SA_Nama || '-'} <br><span class="text-gray-500">Tugas: ${data.SA_Tugas || '-'}</span></li>
+                        <li><strong>Designer:</strong> ${data.Des_Nama || '-'} <br><span class="text-gray-500">Tugas: ${data.Des_Tugas || '-'}</span></li>
+                        <li><strong>Communicator:</strong> ${data.Com_Nama || '-'} <br><span class="text-gray-500">Tugas: ${data.Com_Tugas || '-'}</span></li>
+                    </ul>
+                </div>
+
+                <div class="mb-6">
+                    <h5 class="font-bold text-blue-800 mb-2 border-b border-blue-200 pb-1">4. Rancangan Solusi Digital</h5>
+                    <p class="mb-1 text-xs"><strong>Nama (Jenis):</strong> ${data.NamaSolusi || '-'} (${data.JenisSolusi || '-'})</p>
+                    <p class="mb-1 text-xs"><strong>Deskripsi:</strong> ${data.DeskripsiSolusi || '-'}</p>
+                    <p class="mb-1 text-xs"><strong>Target & Manfaat:</strong> ${data.TargetPengguna || '-'} | ${data.Manfaat || '-'}</p>
+                    <p class="mb-1 text-xs"><strong>Fitur Utama:</strong> ${data.Fitur1 || '-'}, ${data.Fitur2 || '-'}, ${data.Fitur3 || '-'}</p>
+                    <p class="mb-1 text-gray-600 text-xs text-justify mt-2 p-2 bg-gray-100 rounded"><strong>Alur Kerja:</strong><br> ${data.AlurSolusi || '-'}</p>
+                </div>
+
+                <div class="mb-6">
+                    <h5 class="font-bold text-blue-800 mb-2 border-b border-blue-200 pb-1">5. Refleksi & Kesimpulan</h5>
+                    <p class="mb-1 text-xs"><strong>Kelebihan:</strong> ${data.RefleksiKelebihan || '-'}</p>
+                    <p class="mb-1 text-xs"><strong>Kekurangan:</strong> ${data.RefleksiKekurangan || '-'}</p>
+                    <p class="mb-1 text-xs"><strong>Kendala -> Solusi:</strong> ${data.Kendala || '-'} ➔ ${data.SolusiKendala || '-'}</p>
+                    <p class="mb-1 text-xs"><strong>Rencana Pengembangan:</strong> ${data.Pengembangan || '-'}</p>
+                    <p class="mb-2 mt-2 text-xs font-semibold text-justify bg-blue-50 p-2 rounded border border-blue-100"><strong>Kesimpulan:</strong><br> ${data.Kesimpulan || '-'}</p>
                 </div>
             `;
             document.getElementById('modal_content').innerHTML = html;
