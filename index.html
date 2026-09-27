@@ -445,8 +445,8 @@
                     </div>
                     
                     <div class="mb-4">
-                        <label class="block text-sm font-bold mb-1 text-blue-900">Koreksi Nilai Guru (78-89)</label>
-                        <input type="number" id="modal_final_score" class="w-full p-2 border rounded font-bold text-lg focus:ring-2 focus:ring-blue-500" min="78" max="89">
+                        <label class="block text-sm font-bold mb-1 text-blue-900">Koreksi Nilai Guru (80-91)</label>
+                        <input type="number" id="modal_final_score" class="w-full p-2 border rounded font-bold text-lg focus:ring-2 focus:ring-blue-500" min="80" max="91">
                         <p class="text-xs text-gray-500 mt-1">Sistem telah menetapkan nilai. Anda dapat menyetujuinya atau merubah nilai tersebut sesuai analisis Anda.</p>
                     </div>
                     
@@ -460,10 +460,10 @@
                     
                     <div class="mt-4 p-3 bg-yellow-50 rounded border border-yellow-200 text-xs text-yellow-800">
                         <strong>Pedoman Nilai (Tugas Alternatif):</strong><br>
-                        78–80: Analisis sederhana, ada kekurangan.<br>
-                        81–83: Cukup lengkap, beberapa kurang dalam.<br>
-                        84–86: Lengkap, logis, solusi jelas.<br>
-                        87–89: Sangat lengkap, analisis kuat, wireframe relevan.
+                        80–82: Analisis sederhana, ada kekurangan.<br>
+                        83–85: Cukup lengkap, beberapa kurang dalam.<br>
+                        86–88: Lengkap, logis, solusi jelas.<br>
+                        89–91: Sangat lengkap, analisis kuat, relevan.
                     </div>
                 </div>
             </div>
@@ -1010,7 +1010,7 @@
                             ${row.Status || 'TERKIRIM'}
                         </span>
                     </td>
-                    <td class="p-4 border-b font-black ${row.NilaiAkhir >= 78 ? 'text-green-600' : 'text-gray-400'}">${row.NilaiAkhir || '-'}</td>
+                    <td class="p-4 border-b font-black ${row.NilaiAkhir >= 80 ? 'text-green-600' : 'text-gray-400'}">${row.NilaiAkhir || '-'}</td>
                     <td class="p-4 border-b">
                         <button onclick="viewDetail('${row.ID}')" class="text-blue-600 hover:text-blue-800 text-sm font-medium border border-blue-200 px-3 py-1 rounded hover:bg-blue-50">Periksa</button>
                     </td>
@@ -1093,9 +1093,9 @@
         function calculateSuggestion(raw) {
             if(!raw) return '';
             let r = parseInt(raw);
-            if(r < 78) return 78;
-            if(r >= 78 && r <= 89) return r;
-            return 89; // Max cap logic from prompt
+            if(r < 80) return 80;
+            if(r >= 80 && r <= 91) return r;
+            return 91; // Max cap logic from prompt
         }
 
         function closeModal() {
@@ -1108,8 +1108,8 @@
             const notes = document.getElementById('modal_notes').value;
             const btn = document.getElementById('btnSaveGrade');
 
-            if(score < 78 || score > 89) {
-                showToast("Nilai harus berada dalam rentang 78 - 89", true);
+            if(score < 80 || score > 91) {
+                showToast("Nilai harus berada dalam rentang 80 - 91", true);
                 return;
             }
 
